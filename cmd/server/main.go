@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -15,7 +16,7 @@ import (
 func main() {
 	webHookUri := fmt.Sprintf("/webhook-%s", os.Getenv("PET_WEBHOOK_TOKEN"))
 	bot := internal.NewBot(os.Getenv("PET_BOT_TOKEN"))
-	if err := bot.InitWebHook(os.Getenv("PET_DOMAIN")+webHookUri); err != nil {
+	if err := bot.InitWebHook(os.Getenv("PET_DOMAIN") + webHookUri); err != nil {
 		log.Fatal(err)
 	}
 	if err := bot.InitCmds(); err != nil {
@@ -46,8 +47,10 @@ func main() {
 		bot.WebHook(&update)
 	})
 
+	listen := flag.String("port", "8080", "listen port")
+	flag.Parse()
 	fmt.Println("start the server")
-	if err := http.ListenAndServe(":8080", nil); err != nil {
+	if err := http.ListenAndServe(":"+*listen, nil); err != nil {
 		panic(err)
 	}
 }
